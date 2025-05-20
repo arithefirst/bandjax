@@ -1,5 +1,6 @@
 import { House, Medal } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Ribbon } from '@/components/ribbon';
 
 export default function Home() {
   return (
@@ -13,7 +14,9 @@ export default function Home() {
           Welcome, <span className="font-bold">John Doe</span>
         </p>
       </header>
-      <div className="flex flex-1 items-center justify-center">ich liebe boote</div>
+      <div className="flex flex-1 items-center justify-center">
+        <Ribbon color="bronze" className="scale-75" />
+      </div>
       <nav className="grid h-22 w-full grid-cols-2 border-t">
         {/* Remember to make these do things later :D */}
         <div className="flex h-full w-full flex-col items-center justify-center border-r">
