@@ -1,6 +1,7 @@
 import { Header } from '@/components/header';
 import { LeaderboardItem } from '@/components/lboardItem';
 import { Navbar } from '@/components/navbar';
+import { ProtectRSC } from '@/components/protect/server';
 
 const leaderboardData = [
   {
@@ -57,17 +58,19 @@ const leaderboardData = [
 
 export default function Page() {
   return (
-    <main className="flex h-screen w-screen flex-col items-center">
-      <Header />
-      <div className="w-full flex-1 overflow-scroll p-4">
-        <h1 className="mb-4 text-center text-2xl font-bold">Leaderboard</h1>
-        <div className="flex w-full flex-col gap-2">
-          {leaderboardData.map((item, i) => (
-            <LeaderboardItem {...item} key={`lbi-${i}`} place={i + 1} />
-          ))}
+    <ProtectRSC>
+      <main className="flex h-screen w-screen flex-col items-center">
+        <Header />
+        <div className="w-full flex-1 overflow-scroll p-4">
+          <h1 className="mb-4 text-center text-2xl font-bold">Leaderboard</h1>
+          <div className="flex w-full flex-col gap-2">
+            {leaderboardData.map((item, i) => (
+              <LeaderboardItem {...item} key={`lbi-${i}`} place={i + 1} />
+            ))}
+          </div>
         </div>
-      </div>
-      <Navbar active="leaderboard" />
-    </main>
+        <Navbar active="leaderboard" />
+      </main>
+    </ProtectRSC>
   );
 }
