@@ -16,9 +16,9 @@ export function Ribbon({ color, className }: RibbonProps) {
   }
 
   const medalClasses = {
-    bronze: ['from-amber-500 to-amber-700', 'border-amber-700'],
-    silver: ['from-gray-200 to-gray-400', 'border-gray-400'],
-    gold: ['from-yellow-400 to-amber-600', 'border-amber-600'],
+    bronze: ['from-amber-500 to-amber-700 shadow-amber-300/30', 'border-amber-700'],
+    silver: ['from-gray-200 to-gray-400 shadow-gray-300/30', 'border-gray-400'],
+    gold: ['from-yellow-400 to-amber-600 shadow-amber-300/30', 'border-amber-600'],
   };
 
   return (
