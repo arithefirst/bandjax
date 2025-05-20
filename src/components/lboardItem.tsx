@@ -18,7 +18,7 @@ export function LeaderboardItem({ place, name, image, score }: LeaderboardItemPr
       case 3:
         return <Trophy className="mr-2 h-6 w-6 text-amber-800" />;
       default:
-        return <span className="text-black-500 mr-2 text-center font-bold">{place}</span>;
+        return <span className="text-black-500 mr-3 text-center font-bold">{place}</span>;
     }
   }
 
@@ -31,7 +31,7 @@ export function LeaderboardItem({ place, name, image, score }: LeaderboardItemPr
       case 3:
         return 'border-amber-700 from-amber-500 to-amber-600 bg-gradient-to-br';
       default:
-        return 'bg-input';
+        return 'bg-input border-input';
     }
   }
 
