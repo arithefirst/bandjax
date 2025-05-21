@@ -22,6 +22,7 @@ export default async function Page() {
                 image={imageUrl}
                 name={displayName}
                 key={`lbi-${slug}`}
+                sectionSlug={slug}
                 place={i + 1}
               />
             ))}

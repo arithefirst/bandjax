@@ -1,14 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Trophy } from 'lucide-react';
+import Link from 'next/link';
 
 interface LeaderboardItemProps {
   place: number;
   name: string;
   image: string;
   score: number;
+  sectionSlug: string;
 }
 
-export function LeaderboardItem({ place, name, image, score }: LeaderboardItemProps) {
+export function LeaderboardItem({ place, name, image, score, sectionSlug }: LeaderboardItemProps) {
   function Icon() {
     switch (place) {
       case 1:
@@ -36,7 +38,10 @@ export function LeaderboardItem({ place, name, image, score }: LeaderboardItemPr
   }
 
   return (
-    <div className={`flex w-full items-center rounded-lg border p-4 shadow-sm ${getColorClasses()} `}>
+    <Link
+      href={`/section/${sectionSlug}`}
+      className={`flex w-full items-center rounded-lg border p-4 shadow-sm ${getColorClasses()} `}
+    >
       <div className="flex w-10 items-center justify-center">
         <Icon />
       </div>
@@ -46,11 +51,11 @@ export function LeaderboardItem({ place, name, image, score }: LeaderboardItemPr
         <AvatarFallback>{name.substring(0, 2).toUpperCase()}</AvatarFallback>
       </Avatar>
 
-      <div className="ml-4 flex-1">
+      <div className="ml-2 flex-1">
         <p className="font-medium">{name}</p>
       </div>
 
       <div className="text-lg font-bold">{score.toLocaleString()}</div>
-    </div>
+    </Link>
   );
 }
