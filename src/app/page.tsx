@@ -37,7 +37,7 @@ export default async function Home() {
             </Link>{' '}
             are in
           </p>
-          {rank === (1 || 2 || 3) ? (
+          {[1, 2, 3].includes(rank) ? (
             <Ribbon color={getMedalColor()} className="scale-80" />
           ) : (
             <h1 className="text-3xl">{getOrdinalSuffix(rank)}</h1>
