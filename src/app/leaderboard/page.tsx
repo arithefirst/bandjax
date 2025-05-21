@@ -61,7 +61,7 @@ export default function Page() {
     <ProtectRSC>
       <main className="flex h-screen w-screen flex-col items-center">
         <Header />
-        <div className="w-full flex-1 overflow-scroll p-4">
+        <div className="w-full flex-1 overflow-y-scroll p-4">
           <h1 className="mb-4 text-center text-2xl font-bold">Leaderboard</h1>
           <div className="flex w-full flex-col gap-2">
             {leaderboardData.map((item, i) => (
