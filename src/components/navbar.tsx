@@ -1,8 +1,8 @@
-import { House, Medal } from 'lucide-react';
+import { House, Trophy } from 'lucide-react';
 import Link from 'next/link';
 
 interface NavbarProps {
-  active: 'home' | 'leaderboard';
+  active: 'home' | 'leaderboard' | null;
 }
 
 export function Navbar({ active }: NavbarProps) {
@@ -19,7 +19,7 @@ export function Navbar({ active }: NavbarProps) {
         href="/leaderboard"
         className={`flex h-full w-full flex-col items-center justify-center ${active === 'leaderboard' ? 'bg-input/25' : ''}`}
       >
-        <Medal size={36} strokeWidth={1.5} />
+        <Trophy size={36} strokeWidth={1.5} />
         <span className="font-bold">Leaderboard</span>
       </Link>
     </nav>
