@@ -1,9 +1,21 @@
-import { currentUser } from '@clerk/nextjs/server';
-import { UserButton } from '@clerk/nextjs';
-import { Loader } from 'lucide-react';
+'use client';
 
-export async function Header() {
-  const user = await currentUser();
+import { UserButton, useUser } from '@clerk/nextjs';
+import { Loader, Users } from 'lucide-react';
+import { getSectionSlug } from '@/app/actions';
+import { useEffect, useState } from 'react';
+
+export function Header() {
+  const { user } = useUser();
+  const [sectionSlug, setSectionSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (user) setSectionSlug(await getSectionSlug(user.id));
+    }
+
+    fetchData();
+  }, [user]);
 
   return (
     <header className="relative flex h-14 w-full items-center gap-2 border-b px-4 py-2">
@@ -17,9 +29,19 @@ export async function Header() {
             rootBox: 'absolute ml-4 top-1/2 -translate-1/2 z-10',
           },
         }}
-      />
+      >
+        <UserButton.MenuItems>
+          {user && (
+            <UserButton.Link
+              label="View your section"
+              href={`/section/${sectionSlug}`}
+              labelIcon={<Users size={16} />}
+            ></UserButton.Link>
+          )}
+        </UserButton.MenuItems>
+      </UserButton>
       <p>
-        Welcome, <span className="font-bold">{user?.fullName}</span>
+        Welcome, <span className="font-bold">{user ? user.fullName : ''}</span>
       </p>
     </header>
   );
