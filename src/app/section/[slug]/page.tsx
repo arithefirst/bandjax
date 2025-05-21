@@ -35,7 +35,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     <ProtectRSC>
       <main className="flex h-screen w-screen flex-col items-center">
         <Header />
-        <div className="flex w-full flex-1 flex-col overflow-scroll">
+        <div className="flex w-full flex-1 flex-col overflow-scroll pb-2">
           <div className="from-primary/80 to-primary relative flex h-1/6 w-full flex-col-reverse bg-gradient-to-br px-2">
             <Link href="/leaderboard" className="bg-background/30 absolute top-2 left-2 rounded-full p-2">
               <ChevronLeft />
@@ -49,14 +49,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <div className="flex items-center">
               <h1 className="text-2xl font-bold">{displayName}</h1>
               <span className="bg-primary/10 text-primary ml-auto flex items-center rounded-full px-3 py-1 text-sm font-medium">
-                Score: {score.toLocaleString()}
+                Score: <span className="ml-1 font-bold">{score.toLocaleString()}</span>
               </span>
             </div>
             <h2 className="text-muted-foreground leading-5 italic">@{slug}</h2>
             <p className="mt-2 indent-4">{bio}</p>
             <hr className="my-3" />
             <h2 className="text-lg">Members</h2>
-            <div className="mt-1 grid grid-cols-1 gap-1">
+            <div className="mt-2 grid grid-cols-1 gap-1">
               {members.map(async (id) => {
                 const user = await ctx.users.getUser(id);
                 return <UserDisplay key={id} user={user} />;
