@@ -9,7 +9,7 @@ export default function Loading() {
       <div className="flex flex-1 items-center justify-center">
         <Loader className="animate-spin" />
       </div>
-      <Navbar active={null} />
+      <Navbar active="home" />
     </main>
   );
 }
