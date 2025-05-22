@@ -8,7 +8,7 @@ export default function Loading() {
   return (
     <main className="flex h-screen w-screen flex-col items-center">
       <Header />
-      <div className="flex w-full flex-1 flex-col overflow-scroll pb-2">
+      <div className="flex w-full flex-1 flex-col overflow-y-scroll pb-2">
         <div className="from-primary/80 to-primary relative flex h-1/6 w-full flex-col-reverse bg-gradient-to-br px-2">
           <Link href="/leaderboard" className="bg-background/30 absolute top-2 left-2 rounded-full p-2">
             <ChevronLeft />
