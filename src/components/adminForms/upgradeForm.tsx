@@ -35,7 +35,11 @@ export function AdminUpgradeForm({ users }: AdminUpgradeFormProps) {
     <div className="bg-input/50 flex w-full flex-col gap-3 rounded-lg border p-3">
       <h1 className="text-sm">Add admin</h1>
       <Combobox externalValueState={setValue} items={users} itemName="user" />
-      <Button onClick={handleSubmit} disabled={isLoading} className="ml-auto w-[187px] cursor-pointer text-center">
+      <Button
+        onClick={handleSubmit}
+        disabled={isLoading || value === ''}
+        className="ml-auto w-[187px] cursor-pointer text-center"
+      >
         {isLoading ? <Loader className="animate-spin" /> : 'Upgrade user to admin'}
       </Button>
     </div>
