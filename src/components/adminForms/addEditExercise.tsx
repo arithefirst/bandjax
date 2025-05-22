@@ -1,6 +1,6 @@
 'use client';
 
-import { addExersice, updateExersice } from '@/app/actions';
+import { addExersice, updateExercise } from '@/app/actions';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import {
@@ -35,11 +35,12 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sectionLabel, setSectionLabel] = useState<string>('');
   const [selectedExercise, selectExercise] = useState<Exercise | null>(null);
+  const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
   async function handleAddSubmit() {
-    setIsLoading(true);
-
     if (points && points >= 1) {
+      setIsLoading(true);
       try {
         await addExersice(value, {
           name: exerciseName,
@@ -49,6 +50,11 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
         });
 
         toast.success(`Successfully added "${exerciseName}" for the ${sectionLabel}`);
+        setIsAddDrawerOpen(false); // Close drawer on success
+        // Reset form fields
+        setExerciseName('');
+        setPoints(1);
+        setScoringType('perMin');
       } catch (e) {
         console.error('Add Exercise Error: ', e);
         if ((e as Error).message === 'Duplicate Name') {
@@ -65,16 +71,20 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
   }
 
   async function handleEditSubmit() {
-    setIsLoading(true);
-    if (points && points >= 1) {
+    if (selectedExercise?.pointsPer && selectedExercise.pointsPer >= 1) {
+      setIsLoading(true);
       try {
         if (!selectedExercise) throw new Error('Selected Exercise is null');
-        await updateExersice(value, selectedExercise);
+        await updateExercise(value, selectedExercise);
         toast.success(`Successfully updated "${selectedExercise.name}" for the ${sectionLabel}`);
+        setIsEditDrawerOpen(false); // Close drawer on success
+        selectExercise(null); // Reset selected exercise
       } catch (e) {
         console.error('Add Exercise Error: ', e);
         toast.error('An unexpected error has occured. See the console for details.');
       }
+    } else {
+      toast.error(`"Points Per ${scoringType === 'perMin' ? 'Minute' : 'Rep'}" cannot be less than 1`);
     }
     setIsLoading(false);
   }
@@ -90,7 +100,7 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
       <h1 className="text-sm">Add/Edit Exercises</h1>
       <Combobox externalValueState={setValue} items={comboboxSections} itemName="section" />
       <div className="ml-auto flex gap-2">
-        <Drawer>
+        <Drawer open={isAddDrawerOpen} onOpenChange={setIsAddDrawerOpen}>
           <DrawerTrigger
             disabled={value === ''}
             className={cn('w-20 cursor-pointer text-center', buttonVariants())}
@@ -140,7 +150,7 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
             </div>
 
             <DrawerFooter>
-              <Button type="submit" disabled={isLoading} onClick={handleAddSubmit}>
+              <Button type="submit" className="cursor-pointer" disabled={isLoading} onClick={handleAddSubmit}>
                 {isLoading ? <Loader className="animate-spin" /> : 'Save Exercise'}
               </Button>
               <DrawerClose asChild>
@@ -151,7 +161,13 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
-        <Drawer onClose={() => selectExercise(null)}>
+        <Drawer
+          open={isEditDrawerOpen}
+          onOpenChange={(open) => {
+            setIsEditDrawerOpen(open);
+            if (!open) selectExercise(null);
+          }}
+        >
           <DrawerTrigger
             disabled={value === ''}
             className={cn('w-20 cursor-pointer text-center', buttonVariants())}
@@ -231,8 +247,8 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
 
             <DrawerFooter>
               {selectedExercise && (
-                <Button type="submit" disabled={isLoading} onClick={handleEditSubmit}>
-                  {isLoading ? <Loader className="animate-spin" /> : 'Save Exercise'}
+                <Button type="submit" className="cursor-pointer" disabled={isLoading} onClick={handleEditSubmit}>
+                  {isLoading ? <Loader className="animate-spin" /> : 'Update Exercise'}
                 </Button>
               )}
               <DrawerClose asChild>

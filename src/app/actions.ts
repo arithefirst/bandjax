@@ -58,7 +58,7 @@ export async function addExersice(sectionSlug: string, exercise: Exercise) {
   }
 }
 
-export async function updateExersice(sectionSlug: string, exercise: Exercise) {
+export async function updateExercise(sectionSlug: string, exercise: Exercise) {
   const user = await currentUser();
   if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
 
