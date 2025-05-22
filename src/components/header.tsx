@@ -11,7 +11,7 @@ export function Header() {
 
   useEffect(() => {
     async function fetchData() {
-      if (user) setSectionSlug(await getSectionSlug(user.id));
+      setSectionSlug(await getSectionSlug());
     }
 
     fetchData();
