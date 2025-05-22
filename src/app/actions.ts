@@ -1,9 +1,9 @@
 'use server';
 
 import { db } from '@/db';
-import { sections } from '@/db/schema';
+import { Exercise, sections } from '@/db/schema';
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export async function getSectionSlug() {
   const authData = await auth();
@@ -16,7 +16,16 @@ export async function getSectionSlug() {
   return userSection[0].slug;
 }
 
-export async function upgradeUserToAdmin(newAdminId: string) {
+// ###################
+// # Admin Functions #
+// ###################
+
+/**
+ * Upgrades a user to admin
+ * @param newAdminId Clerk UID of the user to be upgraded
+ * @returns Full Name of upgraded user
+ */
+export async function upgradeUserToAdmin(newAdminId: string): Promise<string> {
   const ctx = await clerkClient();
   const user = await currentUser();
   if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
@@ -26,4 +35,19 @@ export async function upgradeUserToAdmin(newAdminId: string) {
       role: 'admin',
     },
   });
+
+  return (await ctx.users.getUser(newAdminId)).fullName || newAdminId;
+}
+
+export async function addExersice(sectionSlug: string, exercise: Exercise) {
+  const sectionData = (await db.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
+  if (!sectionData.exercises.find((e) => e.name === exercise.name)) {
+    const newExercises = [...sectionData.exercises, exercise];
+    await db
+      .update(sections)
+      .set({
+        exercises: newExercises,
+      })
+      .where(eq(sections.slug, sectionSlug));
+  }
 }

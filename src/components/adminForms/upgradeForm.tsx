@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { useEffect, useState } from 'react';
 import { Loader } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AdminUpgradeFormProps {
   users: { value: string; label: string }[];
@@ -18,10 +19,14 @@ export function AdminUpgradeForm({ users }: AdminUpgradeFormProps) {
     if (value !== '') {
       try {
         setLoading(true);
-        await upgradeUserToAdmin(value);
+        const name = await upgradeUserToAdmin(value);
         setLoading(false);
+
+        toast.success(`Successfully made ${name} an admin.`);
       } catch (e) {
-        console.error(e);
+        console.error('Admin Upgrade Error: ', e);
+        toast.error('An unexpected error has occured. See the console for details.');
+        setLoading(false);
       }
     }
   }
@@ -31,7 +36,7 @@ export function AdminUpgradeForm({ users }: AdminUpgradeFormProps) {
   }, [value]);
 
   return (
-    <div className="bg-input/50 flex w-full flex-col gap-3 rounded-lg border p-2">
+    <div className="bg-input/50 flex w-full flex-col gap-3 rounded-lg border p-3">
       <h1 className="text-sm">Add admin</h1>
       <Combobox externalValueState={setValue} items={users} itemName="user" />
       <Button onClick={handleSubmit} disabled={isLoading} className="ml-auto w-[187px] cursor-pointer text-center">
