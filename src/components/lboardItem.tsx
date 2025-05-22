@@ -33,7 +33,7 @@ export function LeaderboardItem({ place, name, image, score, sectionSlug }: Lead
       case 3:
         return 'border-amber-700 from-amber-500 to-amber-600 bg-gradient-to-br';
       default:
-        return 'bg-input border-input';
+        return 'bg-input/50 border-input';
     }
   }
 

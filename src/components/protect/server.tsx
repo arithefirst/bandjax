@@ -1,17 +1,23 @@
 'use server';
 
-import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { currentUser } from '@clerk/nextjs/server';
 
-interface ProtectServerProps {
+export async function ProtectRSC({
+  children,
+  forAdmin = false,
+}: {
   children: React.ReactNode;
-}
-
-export async function ProtectRSC({ children }: ProtectServerProps) {
+  forAdmin?: boolean;
+}) {
   const user = await currentUser();
 
   if (!user) {
     redirect('/sign-in');
+  }
+
+  if (forAdmin && user.publicMetadata.role !== 'admin') {
+    redirect('/');
   }
 
   return <>{children}</>;
