@@ -19,3 +19,5 @@ export const sections = pgTable('section', {
   // ^ We can't use relations here since clerk dosen't
   // store users in the database
 });
+
+export type SectionsType = typeof sections.$inferSelect;

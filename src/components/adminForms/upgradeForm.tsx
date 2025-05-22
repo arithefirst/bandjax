@@ -3,8 +3,8 @@
 import { upgradeUserToAdmin } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
-import { useEffect, useState } from 'react';
 import { Loader } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface AdminUpgradeFormProps {
@@ -30,10 +30,6 @@ export function AdminUpgradeForm({ users }: AdminUpgradeFormProps) {
       }
     }
   }
-
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
 
   return (
     <div className="bg-input/50 flex w-full flex-col gap-3 rounded-lg border p-3">

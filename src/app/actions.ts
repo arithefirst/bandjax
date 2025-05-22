@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { Exercise, sections } from '@/db/schema';
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { eq, sql } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 
 export async function getSectionSlug() {
   const authData = await auth();
@@ -52,5 +53,39 @@ export async function addExersice(sectionSlug: string, exercise: Exercise) {
         exercises: newExercises,
       })
       .where(eq(sections.slug, sectionSlug));
+  } else {
+    throw new Error('Duplicate Name');
+  }
+}
+
+export async function updateExersice(sectionSlug: string, exercise: Exercise) {
+  const user = await currentUser();
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+
+  const sectionData = (await db.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
+
+  // Check if a duplicate name exists
+  const duplicateExists = sectionData.exercises.find((e) => e.name === exercise.name && e.id !== exercise.id);
+
+  if (!duplicateExists) {
+    const exerciseIndex = sectionData.exercises.findIndex((e) => e.id === exercise.id);
+
+    if (exerciseIndex === -1) {
+      throw new Error('Exercise not found');
+    }
+
+    const newExercises = [...sectionData.exercises]; // Create a copy to avoid mutation
+    newExercises[exerciseIndex] = exercise;
+
+    await db
+      .update(sections)
+      .set({
+        exercises: newExercises,
+      })
+      .where(eq(sections.slug, sectionSlug));
+
+    revalidatePath('/admin');
+  } else {
+    throw new Error('Duplicate Name');
   }
 }

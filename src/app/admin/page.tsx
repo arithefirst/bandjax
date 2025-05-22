@@ -9,10 +9,9 @@ import { clerkClient } from '@clerk/nextjs/server';
 
 export default async function Home() {
   const ctx = await clerkClient();
-  const data = await Promise.all([await ctx.users.getUserList(), await db.select().from(sections)]);
 
-  const users = data[0];
-  const sectionData = data[1].map((s) => ({ value: s.slug, label: s.displayName }));
+  const users = await ctx.users.getUserList();
+  const sectionData = await db.select().from(sections);
 
   // Filter out admins and format for combobox
   const usersForCombobox = users.data
