@@ -40,6 +40,9 @@ export async function upgradeUserToAdmin(newAdminId: string): Promise<string> {
 }
 
 export async function addExersice(sectionSlug: string, exercise: Exercise) {
+  const user = await currentUser();
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+
   const sectionData = (await db.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
   if (!sectionData.exercises.find((e) => e.name === exercise.name)) {
     const newExercises = [...sectionData.exercises, exercise];
