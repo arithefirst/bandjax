@@ -1,4 +1,5 @@
 import { Header } from '@/components/header';
+import { LogExerciseForm } from '@/components/logExerciseForm';
 import { Navbar } from '@/components/navbar';
 import { ProtectRSC } from '@/components/protect/server';
 import { Ribbon } from '@/components/ribbon';
@@ -46,6 +47,7 @@ export default async function Home() {
             place with <span className="font-bold">{userSection?.score.toLocaleString()} points</span>
           </p>
         </div>
+        <LogExerciseForm section={userSection} />
         <Navbar active="home" />
       </main>
     </ProtectRSC>

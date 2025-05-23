@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { Exercise, sections } from '@/db/schema';
+import { Exercise, sections, SectionsType } from '@/db/schema';
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
@@ -15,6 +15,30 @@ export async function getSectionSlug() {
     .from(sections)
     .where(sql`${sections.members} @> ${JSON.stringify([authData.userId])}`);
   return userSection[0].slug;
+}
+
+export async function logExercise(section: SectionsType, exerciseId: string, count: number) {
+  const user = await currentUser();
+
+  if (!user) throw new Error('Not authorized');
+
+  // Re-fetching here because the data could have changed since the user's page load
+  const sectionData = await db.select().from(sections).where(eq(sections.slug, section.slug));
+  if (!sectionData[0].members.includes(user.id)) throw new Error('Not authorized');
+
+  const exercise = sectionData[0].exercises.find((e) => e.id === exerciseId);
+  if (!exercise) throw new Error('Exercise does not exist');
+  const newScore = sectionData[0].score + exercise.pointsPer * count;
+
+  await db
+    .update(sections)
+    .set({
+      score: newScore,
+    })
+    .where(eq(sections.slug, section.slug));
+
+  revalidatePath('/');
+  revalidatePath('/leaderboard');
 }
 
 // ###################

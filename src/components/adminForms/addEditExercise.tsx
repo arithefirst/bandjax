@@ -1,6 +1,6 @@
 'use client';
 
-import { addExersice, updateExercise } from '@/app/actions';
+import { addExercise, updateExercise } from '@/app/actions';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import {
@@ -42,7 +42,7 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
     if (points && points >= 1) {
       setIsLoading(true);
       try {
-        await addExersice(value, {
+        await addExercise(value, {
           name: exerciseName,
           scoringType,
           pointsPer: points,
