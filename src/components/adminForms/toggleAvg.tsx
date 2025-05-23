@@ -28,7 +28,7 @@ export function ToggleAvg({ settings }: ToggleAvgProps) {
       toast.success(`Successfully ${e ? 'enabled' : 'disabled'} score averaging`);
     } catch (e) {
       console.error(e);
-      toast.error('An unexpected error has occured. See the console for details.');
+      toast.error('An unexpected error has occurred. See the console for details.');
     }
     setLoading(false);
   }

@@ -60,7 +60,7 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
         if ((e as Error).message === 'Duplicate Name') {
           toast.error(`The name "${exerciseName}" is already in use for the ${sectionLabel}.`);
         } else {
-          toast.error('An unexpected error has occured. See the console for details.');
+          toast.error('An unexpected error has occurred. See the console for details.');
         }
       }
     } else {
@@ -81,7 +81,7 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
         selectExercise(null); // Reset selected exercise
       } catch (e) {
         console.error('Add Exercise Error: ', e);
-        toast.error('An unexpected error has occured. See the console for details.');
+        toast.error('An unexpected error has occurred. See the console for details.');
       }
     } else {
       toast.error(`"Points Per ${scoringType === 'perMin' ? 'Minute' : 'Rep'}" cannot be less than 1`);

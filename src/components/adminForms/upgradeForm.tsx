@@ -25,7 +25,7 @@ export function AdminUpgradeForm({ users }: AdminUpgradeFormProps) {
         toast.success(`Successfully made ${name} an admin.`);
       } catch (e) {
         console.error('Admin Upgrade Error: ', e);
-        toast.error('An unexpected error has occured. See the console for details.');
+        toast.error('An unexpected error has occurred. See the console for details.');
         setLoading(false);
       }
     }

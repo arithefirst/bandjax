@@ -52,7 +52,7 @@ export function LogExerciseForm({ section }: LogExerciseFormProps) {
         setIsOpen(false); // Close the drawer on success
       } catch (e) {
         console.error(e);
-        toast.error('An unexpected error has occured. See the console for details.');
+        toast.error('An unexpected error has occurred. See the console for details.');
       }
     } else {
       toast.error(
