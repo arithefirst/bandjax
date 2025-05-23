@@ -41,7 +41,7 @@ export default async function Home() {
           {[1, 2, 3].includes(rank) ? (
             <Ribbon color={getMedalColor()} className="scale-80" />
           ) : (
-            <h1 className="text-3xl">{getOrdinalSuffix(rank)}</h1>
+            <h1 className="text-primary text-8xl font-bold">{getOrdinalSuffix(rank)}</h1>
           )}
           <p>
             place with <span className="font-bold">{userSection?.score.toLocaleString()} points</span>
