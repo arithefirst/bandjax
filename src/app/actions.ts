@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { Exercise, sections, SectionsType } from '@/db/schema';
+import { Exercise, globalSettings, sections, SectionsType } from '@/db/schema';
 import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
@@ -44,6 +44,24 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
 // ###################
 // # Admin Functions #
 // ###################
+
+export async function setGlobalSetting(setting: string, value: boolean) {
+  const user = await currentUser();
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+
+  await db
+    .insert(globalSettings)
+    .values({
+      enable: value,
+      setting: setting,
+    })
+    .onConflictDoUpdate({
+      target: globalSettings.setting,
+      set: {
+        enable: value,
+      },
+    });
+}
 
 /**
  * Upgrades a user to admin

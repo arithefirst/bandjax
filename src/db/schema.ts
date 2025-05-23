@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core';
 
 export type Exercise = {
   name: string;
@@ -6,6 +6,11 @@ export type Exercise = {
   pointsPer: number;
   id: string;
 };
+
+export const globalSettings = pgTable('global_settings', {
+  enable: boolean('enable').notNull(),
+  setting: text('setting').primaryKey(),
+});
 
 // Section table
 export const sections = pgTable('section', {
