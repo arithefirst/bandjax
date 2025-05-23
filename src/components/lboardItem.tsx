@@ -27,11 +27,11 @@ export function LeaderboardItem({ place, name, image, score, sectionSlug }: Lead
   function getColorClasses() {
     switch (place) {
       case 1:
-        return 'border-amber-400 text-muted bg-gradient-to-br from-amber-100 to-amber-300';
+        return 'border-amber-400 border-2 text-muted bg-gradient-to-br from-amber-100 to-amber-300';
       case 2:
-        return 'border-slate-400 bg-gradient-to-br text-muted from-slate-100 to-slate-300';
+        return 'border-slate-400 border-2 bg-gradient-to-br text-muted from-slate-100 to-slate-300';
       case 3:
-        return 'border-orange-400 bg-gradient-to-br from-orange-100 text-muted to-orange-300';
+        return 'border-orange-400 border-2 bg-gradient-to-br from-orange-100 text-muted to-orange-300';
       default:
         return 'bg-input/50 border-input';
     }
