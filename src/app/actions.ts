@@ -40,7 +40,15 @@ export async function upgradeUserToAdmin(newAdminId: string): Promise<string> {
   return (await ctx.users.getUser(newAdminId)).fullName || newAdminId;
 }
 
-export async function addExersice(sectionSlug: string, exercise: Exercise) {
+/**
+ * Adds a new exercise to a specified section
+ *
+ * @param sectionSlug - The slug identifier of the section to add the exercise to
+ * @param exercise - The exercise object to be added
+ * @throws When user is not authenticated or doesn't have admin role
+ * @throws When an exercise with the same name already exists in the section
+ */
+export async function addExercise(sectionSlug: string, exercise: Exercise) {
   const user = await currentUser();
   if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
 
@@ -58,6 +66,15 @@ export async function addExersice(sectionSlug: string, exercise: Exercise) {
   }
 }
 
+/**
+ * Updates an existing exercise in a specified section
+ *
+ * @param sectionSlug - The slug identifier of the section containing the exercise
+ * @param exercise - The updated exercise object with the same ID as the original
+ * @throws When user is not authenticated or doesn't have admin role
+ * @throws When another exercise with the same name exists in the section
+ * @throws When the exercise to update cannot be found
+ */
 export async function updateExercise(sectionSlug: string, exercise: Exercise) {
   const user = await currentUser();
   if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
