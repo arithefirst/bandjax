@@ -6,6 +6,13 @@ import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
+export async function isScoreAverageingEnabled(): Promise<boolean> {
+  const settings = await db.select().from(globalSettings).where(eq(globalSettings.setting, 'avg_scores'));
+  if (settings.length === 0) return false;
+  if (settings[0].enable) return true;
+  return false;
+}
+
 export async function getSectionSlug() {
   const authData = await auth();
   if (!authData.userId) throw new Error('Not authorized');
@@ -29,11 +36,13 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
   const exercise = sectionData[0].exercises.find((e) => e.id === exerciseId);
   if (!exercise) throw new Error('Exercise does not exist');
   const newScore = sectionData[0].score + exercise.pointsPer * count;
+  const memberct = sectionData[0].members.length;
 
   await db
     .update(sections)
     .set({
       score: newScore,
+      averageScore: Math.ceil(newScore / memberct === 0 ? 1 : memberct),
     })
     .where(eq(sections.slug, section.slug));
 

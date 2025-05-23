@@ -1,3 +1,4 @@
+import { isScoreAverageingEnabled } from '@/app/actions';
 import { Header } from '@/components/header';
 import { Navbar } from '@/components/navbar';
 import { ProtectRSC } from '@/components/protect/server';
@@ -27,9 +28,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const { slug } = await params;
   const sectionQuery = await db.select().from(sections).where(eq(sections.slug, slug)).limit(1);
   const ctx = await clerkClient();
+  const scoreAveraging = await isScoreAverageingEnabled();
 
   if (sectionQuery.length === 0) notFound();
-  const { imageUrl, displayName, bio, score, members } = sectionQuery[0];
+  const { imageUrl, displayName, bio, score, members, averageScore } = sectionQuery[0];
 
   return (
     <ProtectRSC>
@@ -45,12 +47,22 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               <AvatarFallback className="text-2xl">{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
-          <div className="flex-1 px-4 pt-12">
+          <div className="relative flex-1 px-4 pt-12">
+            <span className="bg-primary/10 text-primary absolute top-3 right-3 ml-auto flex flex-col items-center rounded-md px-3 py-1 text-sm font-medium">
+              <span className="flex">
+                Total Score: <span className="ml-1 font-bold">{score.toLocaleString()}</span>
+              </span>
+              {scoreAveraging && (
+                <>
+                  <hr className="border-t-primary my-0.5 h-0 w-full" />
+                  <span className="flex">
+                    Avg Score: <span className="ml-1 font-bold">{averageScore.toLocaleString()}</span>
+                  </span>
+                </>
+              )}
+            </span>
             <div className="flex items-center">
               <h1 className="text-2xl font-bold">{displayName}</h1>
-              <span className="bg-primary/10 text-primary ml-auto flex items-center rounded-full px-3 py-1 text-sm font-medium">
-                Score: <span className="ml-1 font-bold">{score.toLocaleString()}</span>
-              </span>
             </div>
             <h2 className="text-muted-foreground leading-5 italic">@{slug}</h2>
             <p className="mt-2 indent-4">{bio}</p>

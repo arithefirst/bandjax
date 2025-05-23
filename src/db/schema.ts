@@ -19,6 +19,7 @@ export const sections = pgTable('section', {
   bio: text('bio').notNull().default(''),
   imageUrl: text('image_url').notNull(),
   score: integer('score').notNull().default(0),
+  averageScore: integer('averagescore').notNull().default(0),
   exercises: jsonb('exercises').notNull().$type<Exercise[]>().default([]),
   members: jsonb('members').notNull().$type<string[]>().default([]),
   // ^ We can't use relations here since clerk dosen't

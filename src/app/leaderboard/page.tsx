@@ -5,9 +5,14 @@ import { ProtectRSC } from '@/components/protect/server';
 import { db } from '@/db';
 import { sections } from '@/db/schema';
 import { desc } from 'drizzle-orm';
+import { isScoreAverageingEnabled } from '../actions';
 
 export default async function Page() {
-  const sectionData = await db.select().from(sections).orderBy(desc(sections.score));
+  const scoreAveraging = await isScoreAverageingEnabled();
+  const sectionData = await db
+    .select()
+    .from(sections)
+    .orderBy(desc(scoreAveraging ? sections.averageScore : sections.score));
 
   return (
     <ProtectRSC>
@@ -16,9 +21,9 @@ export default async function Page() {
         <div className="w-full flex-1 overflow-y-scroll p-4">
           <h1 className="mb-4 text-center text-2xl font-bold">Leaderboard</h1>
           <div className="flex w-full flex-col gap-2">
-            {sectionData.map(({ slug, displayName, imageUrl, score }, i) => (
+            {sectionData.map(({ slug, displayName, imageUrl, score, averageScore }, i) => (
               <LeaderboardItem
-                score={score}
+                score={scoreAveraging ? averageScore : score}
                 image={imageUrl}
                 name={displayName}
                 key={`lbi-${slug}`}

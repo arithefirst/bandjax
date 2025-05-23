@@ -1,0 +1,1 @@
+ALTER TABLE "section" ADD COLUMN "averagescore" integer DEFAULT 0 NOT NULL;
