@@ -180,7 +180,7 @@ export function AddEditExercise({ sections }: AddEditExerciseProps) {
               <DrawerDescription>Edit an existing exercise for the {sectionLabel}.</DrawerDescription>
             </DrawerHeader>
 
-            <div className="grid w-full grid-cols-1">
+            <div className="grid w-full grid-cols-1 gap-1">
               {(() => {
                 if (!selectedExercise) {
                   const currentSection = sections.find((s) => s.slug === value);

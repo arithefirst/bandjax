@@ -10,7 +10,6 @@ import { clerkClient } from '@clerk/nextjs/server';
 
 export default async function Home() {
   const ctx = await clerkClient();
-
   const users = await ctx.users.getUserList();
 
   const data = await Promise.all([db.select().from(sections), db.select().from(globalSettings)]);
