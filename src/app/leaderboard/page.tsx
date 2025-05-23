@@ -5,10 +5,10 @@ import { ProtectRSC } from '@/components/protect/server';
 import { db } from '@/db';
 import { sections } from '@/db/schema';
 import { desc } from 'drizzle-orm';
-import { isScoreAverageingEnabled } from '../actions';
+import { isScoreAveragingEnabled } from '../actions';
 
 export default async function Page() {
-  const scoreAveraging = await isScoreAverageingEnabled();
+  const scoreAveraging = await isScoreAveragingEnabled();
   const sectionData = await db
     .select()
     .from(sections)

@@ -6,7 +6,7 @@ import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
 import { eq, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 
-export async function isScoreAverageingEnabled(): Promise<boolean> {
+export async function isScoreAveragingEnabled(): Promise<boolean> {
   const settings = await db.select().from(globalSettings).where(eq(globalSettings.setting, 'avg_scores'));
   if (settings.length === 0) return false;
   if (settings[0].enable) return true;
