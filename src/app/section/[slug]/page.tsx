@@ -50,7 +50,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           <div className="relative flex-1 px-4 pt-12">
             <span className="bg-primary/10 text-primary absolute top-3 right-3 ml-auto flex flex-col items-center rounded-md px-3 py-1 text-sm font-medium">
               <span className="flex">
-                Total Score: <span className="ml-1 font-bold">{score.toLocaleString()}</span>
+                {scoreAveraging && 'Total'} Score: <span className="ml-1 font-bold">{score.toLocaleString()}</span>
               </span>
               {scoreAveraging && (
                 <>
