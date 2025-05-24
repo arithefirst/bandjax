@@ -15,32 +15,36 @@ export async function isScoreAveragingEnabled(): Promise<boolean> {
 
 export async function getSectionSlug() {
   const authData = await auth();
-  if (!authData.userId) throw new Error('Not authorized');
+  if (!authData.userId) throw new Error('Section slug retrieval not authorized');
 
   const userSection = await db
     .select()
     .from(sections)
+    // Drizzle auto-escapes this SQL
     .where(sql`${sections.members} @> ${JSON.stringify([authData.userId])}`);
-  return userSection[0].slug || null;
+  return userSection.length >= 1 ? userSection[0].slug : null;
 }
 
 export async function onboardUser(sectionSlug: string) {
   const ctx = await clerkClient();
   const authData = await auth();
-  if (!authData.userId) throw new Error('Not authorized');
+  if (!authData.userId) throw new Error('Onboarding Not authorized');
 
-  const sectionData = await db.select().from(sections).where(eq(sections.slug, sectionSlug));
-  const memberCt = sectionData[0].members.length;
+  // Use a transaction to prevent race conditions
+  await db.transaction(async (tx) => {
+    const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
+    const memberCt = sectionData[0].members.length;
 
-  await db
-    .update(sections)
-    .set({
-      members: [...sectionData[0].members, authData.userId],
-      // Update the avg score here because changing the count of users
-      // should also change the average of the points per user
-      averageScore: Math.floor(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
-    })
-    .where(eq(sections.slug, sectionSlug));
+    await tx
+      .update(sections)
+      .set({
+        members: [...sectionData[0].members, authData.userId],
+        // Update the avg score here because changing the count of users
+        // should also change the average of the points per user
+        averageScore: Math.floor(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
+      })
+      .where(eq(sections.slug, sectionSlug));
+  });
 
   await ctx.users.updateUserMetadata(authData.userId, {
     publicMetadata: {
@@ -51,24 +55,26 @@ export async function onboardUser(sectionSlug: string) {
 
 export async function logExercise(section: SectionsType, exerciseId: string, count: number) {
   const user = await currentUser();
-  if (!user) throw new Error('Not authorized');
+  if (!user) throw new Error('Log Exercise Not authorized');
 
   // Re-fetching here because the data could have changed since the user's page load
-  const sectionData = await db.select().from(sections).where(eq(sections.slug, section.slug));
-  if (!sectionData[0].members.includes(user.id)) throw new Error('Not authorized');
+  await db.transaction(async (tx) => {
+    const sectionData = await tx.select().from(sections).where(eq(sections.slug, section.slug));
+    if (!sectionData[0].members.includes(user.id)) throw new Error('Log Exercise Not authorized');
 
-  const exercise = sectionData[0].exercises.find((e) => e.id === exerciseId);
-  if (!exercise) throw new Error('Exercise does not exist');
-  const newScore = sectionData[0].score + exercise.pointsPer * count;
-  const memberCt = sectionData[0].members.length;
+    const exercise = sectionData[0].exercises.find((e) => e.id === exerciseId);
+    if (!exercise) throw new Error('Exercise does not exist');
+    const newScore = sectionData[0].score + exercise.pointsPer * count;
+    const memberCt = sectionData[0].members.length;
 
-  await db
-    .update(sections)
-    .set({
-      score: newScore,
-      averageScore: Math.floor(newScore / (memberCt === 0 ? 1 : memberCt)),
-    })
-    .where(eq(sections.slug, section.slug));
+    await tx
+      .update(sections)
+      .set({
+        score: newScore,
+        averageScore: Math.floor(newScore / (memberCt === 0 ? 1 : memberCt)),
+      })
+      .where(eq(sections.slug, section.slug));
+  });
 
   revalidatePath('/');
   revalidatePath('/leaderboard');
@@ -80,7 +86,7 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
 
 export async function setGlobalSetting(setting: string, value: boolean) {
   const user = await currentUser();
-  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Set Global Setting Not authorized');
 
   await db
     .insert(globalSettings)
@@ -104,7 +110,7 @@ export async function setGlobalSetting(setting: string, value: boolean) {
 export async function upgradeUserToAdmin(newAdminId: string): Promise<string> {
   const ctx = await clerkClient();
   const user = await currentUser();
-  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Admin Upgrade Not authorized');
 
   await ctx.users.updateUserMetadata(newAdminId, {
     publicMetadata: {
@@ -125,20 +131,22 @@ export async function upgradeUserToAdmin(newAdminId: string): Promise<string> {
  */
 export async function addExercise(sectionSlug: string, exercise: Exercise) {
   const user = await currentUser();
-  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Add Exercise Not authorized');
 
-  const sectionData = (await db.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
-  if (!sectionData.exercises.find((e) => e.name === exercise.name)) {
-    const newExercises = [...sectionData.exercises, exercise];
-    await db
-      .update(sections)
-      .set({
-        exercises: newExercises,
-      })
-      .where(eq(sections.slug, sectionSlug));
-  } else {
-    throw new Error('Duplicate Name');
-  }
+  await db.transaction(async (tx) => {
+    const sectionData = (await tx.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
+    if (!sectionData.exercises.find((e) => e.name.toLocaleLowerCase() === exercise.name.toLocaleLowerCase())) {
+      const newExercises = [...sectionData.exercises, exercise];
+      await tx
+        .update(sections)
+        .set({
+          exercises: newExercises,
+        })
+        .where(eq(sections.slug, sectionSlug));
+    } else {
+      throw new Error('Duplicate Name');
+    }
+  });
 }
 
 /**
@@ -152,32 +160,36 @@ export async function addExercise(sectionSlug: string, exercise: Exercise) {
  */
 export async function updateExercise(sectionSlug: string, exercise: Exercise) {
   const user = await currentUser();
-  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Not authorized');
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Update Exercise Not authorized');
 
-  const sectionData = (await db.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
+  await db.transaction(async (tx) => {
+    const sectionData = (await tx.select().from(sections).where(eq(sections.slug, sectionSlug)))[0];
 
-  // Check if a duplicate name exists
-  const duplicateExists = sectionData.exercises.find((e) => e.name === exercise.name && e.id !== exercise.id);
+    // Check if a duplicate name exists
+    const duplicateExists = sectionData.exercises.find(
+      (e) => e.name.toLowerCase() === exercise.name.toLowerCase() && e.id !== exercise.id,
+    );
 
-  if (!duplicateExists) {
-    const exerciseIndex = sectionData.exercises.findIndex((e) => e.id === exercise.id);
+    if (!duplicateExists) {
+      const exerciseIndex = sectionData.exercises.findIndex((e) => e.id === exercise.id);
 
-    if (exerciseIndex === -1) {
-      throw new Error('Exercise not found');
+      if (exerciseIndex === -1) {
+        throw new Error('Exercise not found');
+      }
+
+      const newExercises = [...sectionData.exercises]; // Create a copy to avoid mutation
+      newExercises[exerciseIndex] = exercise;
+
+      await tx
+        .update(sections)
+        .set({
+          exercises: newExercises,
+        })
+        .where(eq(sections.slug, sectionSlug));
+
+      revalidatePath('/admin');
+    } else {
+      throw new Error('Duplicate Name');
     }
-
-    const newExercises = [...sectionData.exercises]; // Create a copy to avoid mutation
-    newExercises[exerciseIndex] = exercise;
-
-    await db
-      .update(sections)
-      .set({
-        exercises: newExercises,
-      })
-      .where(eq(sections.slug, sectionSlug));
-
-    revalidatePath('/admin');
-  } else {
-    throw new Error('Duplicate Name');
-  }
+  });
 }
