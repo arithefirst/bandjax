@@ -8,6 +8,7 @@ import { useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Loader } from 'lucide-react';
 
 interface OnboardingFormProps {
   sections: { value: string; label: string }[];
@@ -17,6 +18,19 @@ export function OnboardingForm({ sections }: OnboardingFormProps) {
   const [selectedSection, setSelectedSection] = useState<string>('');
   const { user, isLoaded } = useUser();
   const router = useRouter();
+
+  // Add loading state to prevent hydration issues
+  if (!isLoaded) {
+    return (
+      <Card className="mx-auto w-full max-w-md rounded-lg">
+        <CardContent className="flex items-center justify-center p-8">
+          <div>
+            <Loader className="animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   async function handleContinue() {
     if (selectedSection && isLoaded && user) {
