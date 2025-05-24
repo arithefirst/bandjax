@@ -19,6 +19,18 @@ export function OnboardingForm({ sections }: OnboardingFormProps) {
   const { user, isLoaded } = useUser();
   const router = useRouter();
 
+  async function handleContinue() {
+    if (selectedSection && isLoaded && user) {
+      try {
+        await onboardUser(selectedSection);
+        router.push(selectedSection !== 'spectator' ? '/' : '/leaderboard');
+      } catch (e) {
+        console.error('Onboarding Error: ', e);
+        toast.error(JSON.stringify(e as Error));
+      }
+    }
+  }
+
   // Add loading state to prevent hydration issues
   if (!isLoaded) {
     return (
@@ -32,18 +44,6 @@ export function OnboardingForm({ sections }: OnboardingFormProps) {
     );
   }
 
-  async function handleContinue() {
-    if (selectedSection && isLoaded && user) {
-      try {
-        await onboardUser(selectedSection);
-        router.push('/');
-      } catch (e) {
-        console.error('Onboarding Error: ', e);
-        toast.error(JSON.stringify(e as Error));
-      }
-    }
-  }
-
   return (
     <Card className="mx-auto w-full max-w-md rounded-lg">
       <CardHeader className="text-center">
@@ -51,7 +51,12 @@ export function OnboardingForm({ sections }: OnboardingFormProps) {
         <CardDescription>Please select your section to complete setup</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Combobox items={sections} itemName="section" externalValueState={setSelectedSection} className="w-full" />
+        <Combobox
+          items={[...sections, { value: 'spectator', label: 'None (Cannot log exercise)' }]}
+          itemName="section"
+          externalValueState={setSelectedSection}
+          className="w-full"
+        />
 
         <Button onClick={handleContinue} disabled={!selectedSection} className="w-full cursor-pointer">
           Continue

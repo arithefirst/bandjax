@@ -30,7 +30,7 @@ export default async function Home() {
   }
 
   return (
-    <ProtectRSC checkOnboarded>
+    <ProtectRSC blockSpectators="/leaderboard" checkOnboarded>
       <main className="flex min-h-screen w-screen flex-col items-center">
         <Header />
         <div className="flex flex-1 flex-col items-center justify-center text-xl">

@@ -1,5 +1,3 @@
-'use server';
-
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
@@ -7,10 +5,12 @@ export async function ProtectRSC({
   children,
   forAdmin = false,
   checkOnboarded = false,
+  blockSpectators = null,
 }: {
   children: React.ReactNode;
   forAdmin?: boolean;
   checkOnboarded?: boolean;
+  blockSpectators?: null | string;
 }) {
   const user = await currentUser();
 
@@ -18,13 +18,21 @@ export async function ProtectRSC({
     redirect('/sign-in');
   }
 
-  if (checkOnboarded && user.publicMetadata.onboarded !== true) {
+  const metadata = user.publicMetadata || {};
+
+  console.log(blockSpectators && metadata.isSpectator !== true);
+
+  if (blockSpectators && metadata.isSpectator === true) {
+    redirect(blockSpectators);
+  }
+
+  if (checkOnboarded && metadata.onboarded !== true) {
     redirect('/onboarding');
   }
 
-  if (forAdmin && user.publicMetadata.role !== 'admin') {
+  if (forAdmin && metadata.role !== 'admin') {
     redirect('/');
   }
 
-  return <>{children}</>;
+  return children;
 }

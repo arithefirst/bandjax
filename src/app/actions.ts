@@ -30,27 +30,36 @@ export async function onboardUser(sectionSlug: string) {
   const authData = await auth();
   if (!authData.userId) throw new Error('Onboarding Not authorized');
 
-  // Use a transaction to prevent race conditions
-  await db.transaction(async (tx) => {
-    const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
-    const memberCt = sectionData[0].members.length + 1;
+  if (sectionSlug === 'spectator') {
+    await ctx.users.updateUserMetadata(authData.userId, {
+      publicMetadata: {
+        onboarded: true,
+        isSpectator: true,
+      },
+    });
+  } else {
+    // Use a transaction to prevent race conditions
+    await db.transaction(async (tx) => {
+      const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
+      const memberCt = sectionData[0].members.length + 1;
 
-    await tx
-      .update(sections)
-      .set({
-        members: [...sectionData[0].members, authData.userId],
-        // Update the avg score here because changing the count of users
-        // should also change the average of the points per user
-        averageScore: Math.floor(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
-      })
-      .where(eq(sections.slug, sectionSlug));
-  });
+      await tx
+        .update(sections)
+        .set({
+          members: [...sectionData[0].members, authData.userId],
+          // Update the avg score here because changing the count of users
+          // should also change the average of the points per user
+          averageScore: Math.floor(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
+        })
+        .where(eq(sections.slug, sectionSlug));
+    });
 
-  await ctx.users.updateUserMetadata(authData.userId, {
-    publicMetadata: {
-      onboarded: true,
-    },
-  });
+    await ctx.users.updateUserMetadata(authData.userId, {
+      publicMetadata: {
+        onboarded: true,
+      },
+    });
+  }
 }
 
 export async function logExercise(section: SectionsType, exerciseId: string, count: number) {
