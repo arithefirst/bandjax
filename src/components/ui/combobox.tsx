@@ -47,7 +47,7 @@ export function Combobox({ className, items, externalValueState, itemName = 'ite
       </PopoverTrigger>
       <PopoverContent className="p-0" style={{ width: 'var(--radix-popover-trigger-width)' }}>
         <Command>
-          <CommandInput placeholder={`Search ${itemName}s...`} className="h-9" />
+          <CommandInput tabIndex={-1} placeholder={`Search ${itemName}s...`} className="h-9" />
           <CommandList>
             <CommandEmpty>No {itemName} found.</CommandEmpty>
             <CommandGroup>
