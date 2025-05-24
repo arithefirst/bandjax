@@ -8,11 +8,13 @@ import { sections } from '@/db/schema';
 import { auth } from '@clerk/nextjs/server';
 import { desc } from 'drizzle-orm';
 import Link from 'next/link';
+import { isScoreAveragingEnabled } from './actions';
 
 export default async function Home() {
   const authData = await auth();
   const sectionData = await db.select().from(sections).orderBy(desc(sections.score));
   const userSection = sectionData.find((s) => s.members.includes(authData.userId!));
+  const scoreAveraging = await isScoreAveragingEnabled();
   const rank = sectionData.findIndex((s) => s.slug === userSection?.slug) + 1;
 
   function getOrdinalSuffix(n: number): string {
@@ -28,7 +30,7 @@ export default async function Home() {
   }
 
   return (
-    <ProtectRSC>
+    <ProtectRSC checkOnboarded>
       <main className="flex min-h-screen w-screen flex-col items-center">
         <Header />
         <div className="flex flex-1 flex-col items-center justify-center text-xl">
@@ -44,7 +46,11 @@ export default async function Home() {
             <h1 className="text-primary text-8xl font-bold">{getOrdinalSuffix(rank)}</h1>
           )}
           <p>
-            place with <span className="font-bold">{userSection?.score.toLocaleString()} points</span>
+            place with{' '}
+            <span className="font-bold">
+              {userSection && (scoreAveraging ? userSection.averageScore : userSection.score).toLocaleString()}{' '}
+              points
+            </span>
           </p>
         </div>
         <LogExerciseForm section={userSection} />

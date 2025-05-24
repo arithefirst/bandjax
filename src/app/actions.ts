@@ -21,12 +21,36 @@ export async function getSectionSlug() {
     .select()
     .from(sections)
     .where(sql`${sections.members} @> ${JSON.stringify([authData.userId])}`);
-  return userSection[0].slug;
+  return userSection[0].slug || null;
+}
+
+export async function onboardUser(sectionSlug: string) {
+  const ctx = await clerkClient();
+  const authData = await auth();
+  if (!authData.userId) throw new Error('Not authorized');
+
+  const sectionData = await db.select().from(sections).where(eq(sections.slug, sectionSlug));
+  const memberCt = sectionData[0].members.length;
+
+  await db
+    .update(sections)
+    .set({
+      members: [...sectionData[0].members, authData.userId],
+      // Update the avg score here because changing the count of users
+      // should also change the average of the points per user
+      averageScore: Math.ceil(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
+    })
+    .where(eq(sections.slug, sectionSlug));
+
+  await ctx.users.updateUserMetadata(authData.userId, {
+    publicMetadata: {
+      onboarded: true,
+    },
+  });
 }
 
 export async function logExercise(section: SectionsType, exerciseId: string, count: number) {
   const user = await currentUser();
-
   if (!user) throw new Error('Not authorized');
 
   // Re-fetching here because the data could have changed since the user's page load
@@ -36,13 +60,13 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
   const exercise = sectionData[0].exercises.find((e) => e.id === exerciseId);
   if (!exercise) throw new Error('Exercise does not exist');
   const newScore = sectionData[0].score + exercise.pointsPer * count;
-  const memberct = sectionData[0].members.length;
+  const memberCt = sectionData[0].members.length;
 
   await db
     .update(sections)
     .set({
       score: newScore,
-      averageScore: Math.ceil(newScore / memberct === 0 ? 1 : memberct),
+      averageScore: Math.ceil(newScore / (memberCt === 0 ? 1 : memberCt)),
     })
     .where(eq(sections.slug, section.slug));
 

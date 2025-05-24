@@ -11,7 +11,11 @@ export function Header() {
 
   useEffect(() => {
     async function fetchData() {
-      setSectionSlug(await getSectionSlug());
+      try {
+        setSectionSlug(await getSectionSlug());
+      } catch {
+        setSectionSlug(null);
+      }
     }
 
     fetchData();
@@ -30,15 +34,15 @@ export function Header() {
           },
         }}
       >
-        <UserButton.MenuItems>
-          {user && (
+        {user && sectionSlug && (
+          <UserButton.MenuItems>
             <UserButton.Link
               label="View your section"
               href={`/section/${sectionSlug}`}
               labelIcon={<Users size={16} />}
             ></UserButton.Link>
-          )}
-        </UserButton.MenuItems>
+          </UserButton.MenuItems>
+        )}
       </UserButton>
       <p>
         Welcome, <span className="font-bold">{user ? user.fullName : ''}</span>

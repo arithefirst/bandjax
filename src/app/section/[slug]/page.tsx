@@ -34,7 +34,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const { imageUrl, displayName, bio, score, members, averageScore } = sectionQuery[0];
 
   return (
-    <ProtectRSC>
+    <ProtectRSC checkOnboarded>
       <main className="flex h-screen w-screen flex-col items-center">
         <Header />
         <div className="flex w-full flex-1 flex-col overflow-y-scroll pb-2">

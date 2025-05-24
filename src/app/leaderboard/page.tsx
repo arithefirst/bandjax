@@ -27,7 +27,7 @@ export default async function Page() {
     .orderBy(desc(scoreAveraging ? sections.averageScore : sections.score));
 
   return (
-    <ProtectRSC>
+    <ProtectRSC checkOnboarded>
       <main className="flex h-screen w-screen flex-col items-center">
         <Header />
         <div className="relative w-full flex-1 overflow-y-scroll p-4">
