@@ -38,7 +38,7 @@ export async function onboardUser(sectionSlug: string) {
       members: [...sectionData[0].members, authData.userId],
       // Update the avg score here because changing the count of users
       // should also change the average of the points per user
-      averageScore: Math.ceil(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
+      averageScore: Math.floor(sectionData[0].score / (memberCt === 0 ? 1 : memberCt)),
     })
     .where(eq(sections.slug, sectionSlug));
 
@@ -66,7 +66,7 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
     .update(sections)
     .set({
       score: newScore,
-      averageScore: Math.ceil(newScore / (memberCt === 0 ? 1 : memberCt)),
+      averageScore: Math.floor(newScore / (memberCt === 0 ? 1 : memberCt)),
     })
     .where(eq(sections.slug, section.slug));
 
