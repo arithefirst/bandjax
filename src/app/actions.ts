@@ -33,7 +33,7 @@ export async function onboardUser(sectionSlug: string) {
   // Use a transaction to prevent race conditions
   await db.transaction(async (tx) => {
     const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
-    const memberCt = sectionData[0].members.length;
+    const memberCt = sectionData[0].members.length + 1;
 
     await tx
       .update(sections)
