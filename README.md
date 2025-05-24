@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bandjax
 
-## Getting Started
+Bandjax is a fitness‐focused web application that encourages friendly competition among groups ("sections"). Each section logs exercises, earns points, and climbs a leaderboard either by total points or average points per member to motivate users to stay active and engaged.
 
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework:** Next.js 15.3.2 (App Router, RSC)
+- **Language:** TypeScript, React 19
+- **UI:** Tailwind CSS, shadcn/ui (Radix primitives), Lucide icons, Sonner toasts
+- **Auth & User Management:** Clerk (Next.js SDK)
+- **Database & ORM:** PostgreSQL, Drizzle ORM + drizzle-kit migrations
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📖 Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Section Leaderboards:** Compare groups by total or average scores.
+- **Exercise Logging:** Assign point values per minute/repetition; real‐time score updates.
+- **User Profiles:** Avatar display, section membership lookup.
+- **Scoring Modes:** Toggle between Total Score Mode and Average Score Mode for fair play.
+- **Section Profiles:** Set a bio, profile image, and linked instagram account for each section.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙️ Getting Started
 
-## Learn More
+### Prerequisites
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js ≥18
+- PostgreSQL database
+- Clerk account (publishable & secret keys)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Clone & install
+   ```bash
+   git clone https://github.com/your-org/bandjax.git
+   cd bandjax
+   npm install
+   ```
+2. Copy & configure env
+   ```bash
+   cp .env.example .env
+   # Fill in NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY, DATABASE_URL
+   ```
+3. Run migrations
+   ```bash
+   npx drizzle-kit migrate
+   ```
+4. Start dev server
+   ```bash
+   npm run dev
+   ```
+5. Open http://localhost:3000
 
-## Deploy on Vercel
+### Production
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Build
+   ```bash
+   npm run build
+   ```
+2. Run migrations against your production database
+   ```bash
+   npx drizzle-kit migrate
+   ```
+3. Start
+   ```bash
+   npm start
+   ```
+4. Ensure environment variables are set in your host (DATABASE_URL, CLERK keys, etc.)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🤝 Contributing
+
+We love contributions! Please follow these guidelines:
+
+1. Fork the repo and create a feature branch
+   ```
+   git checkout -b feat/your-feature
+   ```
+2. Follow code style:
+   - Run `npm run lint`
+   - Format with `npm run format`
+3. Write tests where applicable
+4. Commit using conventional commits:
+   ```
+   feat: add new leaderboard filter
+   fix: correct average score calculation
+   ```
+5. Open a Pull Request describing your changes
+
+## 📝 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
