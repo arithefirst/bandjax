@@ -1,17 +1,17 @@
 {
   "name": "Bandjax",
   "short_name": "Bandjax",
-  "theme_color": "#FAFAFA",
+  "theme_color": "#FD3F7C",
   "background_color": "#09090B",
   "start_url": "/",
   "id": "arithefirst_bjx",
   "display": "standalone",
-  "description": "Bandjax is an app to encourage fitness by competing against other members in a group and getting ranked on a leaderboard by the amount of physical fitness you do ",
+  "description": "Bandjax is an app to encourage fitness by competing against other members in a group and getting ranked on a leaderboard by the amount of physical fitness you do.",
   "icons": [
     {
       "purpose": "any",
-      "sizes": "256x256",
-      "src": "favicon.ico",
+      "sizes": "1024x1024",
+      "src": "app/applogo.png",
       "type": "image/png"
     }
   ]

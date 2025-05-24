@@ -11,6 +11,24 @@ import { eq } from 'drizzle-orm';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const sectionQuery = await db.select().from(sections).where(eq(sections.slug, slug)).limit(1);
+
+  if (sectionQuery.length === 0) {
+    return {
+      title: 'Bandjax | Section Not Found',
+    };
+  }
+
+  const { displayName } = sectionQuery[0];
+
+  return {
+    title: `Bandjax | ${displayName}`,
+  };
+}
 
 function UserDisplay({ user }: { user: User }) {
   return (

@@ -7,6 +7,11 @@ import { ProtectRSC } from '@/components/protect/server';
 import { db } from '@/db';
 import { globalSettings, sections } from '@/db/schema';
 import { clerkClient } from '@clerk/nextjs/server';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Bandjax | Admin',
+};
 
 export default async function Home() {
   const ctx = await clerkClient();

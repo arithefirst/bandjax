@@ -5,6 +5,11 @@ import { db } from '@/db';
 import { sections } from '@/db/schema';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Bandjax | Onboarding',
+};
 
 export default async function Page() {
   const sectionData = await db.select().from(sections);

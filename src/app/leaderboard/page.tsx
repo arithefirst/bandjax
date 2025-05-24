@@ -18,6 +18,11 @@ import { cn } from '@/lib/utils';
 import { desc } from 'drizzle-orm';
 import { Info } from 'lucide-react';
 import { isScoreAveragingEnabled } from '../actions';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Bandjax | Leaderboard',
+};
 
 export default async function Page() {
   const scoreAveraging = await isScoreAveragingEnabled();
