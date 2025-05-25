@@ -1,15 +1,16 @@
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import { CheckOnboarding } from '../onboardForm';
+import { db } from '@/db';
+import { sections } from '@/db/schema';
 
 export async function ProtectRSC({
   children,
   forAdmin = false,
-  checkOnboarded = false,
   blockSpectators = null,
 }: {
   children: React.ReactNode;
   forAdmin?: boolean;
-  checkOnboarded?: boolean;
   blockSpectators?: null | string;
 }) {
   const user = await currentUser();
@@ -20,19 +21,20 @@ export async function ProtectRSC({
 
   const metadata = user.publicMetadata || {};
 
-  console.log(blockSpectators && metadata.isSpectator !== true);
-
   if (blockSpectators && metadata.isSpectator === true) {
     redirect(blockSpectators);
-  }
-
-  if (checkOnboarded && metadata.onboarded !== true) {
-    redirect('/onboarding');
   }
 
   if (forAdmin && metadata.role !== 'admin') {
     redirect('/');
   }
 
-  return children;
+  const sectionData = (await db.select().from(sections)).map((s) => ({ value: s.slug, label: s.displayName }));
+
+  return (
+    <>
+      {children}
+      <CheckOnboarding sections={sectionData} />
+    </>
+  );
 }
