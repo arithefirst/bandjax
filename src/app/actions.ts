@@ -89,6 +89,25 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
   revalidatePath('/leaderboard');
 }
 
+export async function updateBio(sectionSlug: string, newBio: string) {
+  const user = await currentUser();
+  if (!user) throw new Error('Log Exercise Not authorized');
+
+  await db.transaction(async (tx) => {
+    const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
+    if (!sectionData[0].members.includes(user.id)) throw new Error('Bio Update Not authorized');
+
+    await tx
+      .update(sections)
+      .set({
+        bio: newBio,
+      })
+      .where(eq(sections.slug, sectionSlug));
+  });
+
+  revalidatePath(`/${sectionSlug}`);
+}
+
 // ###################
 // # Admin Functions #
 // ###################

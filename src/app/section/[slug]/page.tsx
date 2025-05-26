@@ -1,17 +1,18 @@
-import { isScoreAveragingEnabled } from '@/app/actions';
+import { getSectionSlug, isScoreAveragingEnabled } from '@/app/actions';
 import { Header } from '@/components/header';
 import { Navbar } from '@/components/navbar';
 import { ProtectRSC } from '@/components/protect/server';
+import { SectionBio } from '@/components/sectionBio';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { db } from '@/db';
 import { sections } from '@/db/schema';
 import { User } from '@clerk/backend';
-import { clerkClient } from '@clerk/nextjs/server';
+import { clerkClient, currentUser } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
 import { ChevronLeft } from 'lucide-react';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -51,11 +52,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (sectionQuery.length === 0) notFound();
   const { imageUrl, displayName, bio, score, members, averageScore } = sectionQuery[0];
 
+  const user = await currentUser();
+  const userSectionSlug = user ? await getSectionSlug() : null;
+  const canEditBio = userSectionSlug === slug;
+
   return (
     <ProtectRSC>
       <main className="flex h-screen w-screen flex-col items-center">
         <Header />
-        <div className="flex w-full flex-1 flex-col overflow-y-scroll pb-2">
+        <div className="relative flex w-full flex-1 flex-col overflow-y-scroll pb-2">
           <div className="from-primary/80 to-primary relative flex h-1/6 w-full flex-col-reverse bg-gradient-to-br px-2">
             <Link href="/leaderboard" className="bg-background/30 absolute top-2 left-2 rounded-full p-2">
               <ChevronLeft />
@@ -65,18 +70,20 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               <AvatarFallback className="text-2xl">{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
-          <div className="relative flex-1 px-4 pt-12">
-            <span className="bg-primary/10 text-primary absolute top-3 right-3 ml-auto flex flex-col items-center rounded-md px-3 py-1 text-sm font-medium">
-              <span className="flex">
-                Score:{' '}
-                <span className="ml-1 font-bold">{(scoreAveraging ? averageScore : score).toLocaleString()}</span>
-              </span>
-            </span>
+          <div className="flex-1 px-4 pt-12">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold">{displayName}</h1>
+              <span className="bg-primary/10 text-primary ml-auto flex w-fit flex-col items-center rounded-md px-3 py-1 text-sm font-medium">
+                <span className="flex">
+                  Score:{' '}
+                  <span className="ml-1 font-bold">
+                    {(scoreAveraging ? averageScore : score).toLocaleString()}
+                  </span>
+                </span>
+              </span>
             </div>
             <h2 className="text-muted-foreground leading-5 italic">@{slug}</h2>
-            <p className="mt-2 indent-4">{bio}</p>
+            <SectionBio value={bio} canEdit={canEditBio} sectionSlug={slug} />
             <hr className="my-3" />
             <h2 className="text-lg">Members</h2>
             <div className="mt-2 grid grid-cols-1 gap-1">

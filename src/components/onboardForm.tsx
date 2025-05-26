@@ -30,7 +30,7 @@ export function CheckOnboarding({ sections }: OnboardingFormProps) {
         window.location.reload();
       } catch (e) {
         console.error('Onboarding Error: ', e);
-        toast.error(JSON.stringify(e as Error));
+        toast.error('An unexpected error has occurred. See the console for details.');
       }
     }
   }
