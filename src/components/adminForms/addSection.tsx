@@ -29,7 +29,7 @@ export function AddSectionForm() {
 
   return (
     <div className="bg-input/50 flex w-full flex-col gap-3 rounded-lg border p-3">
-      <h1 className="text-sm">Add admin</h1>
+      <h1 className="text-sm">Add Section</h1>
       <Input
         placeholder="Section Name (Plural; E.G: Tubas)"
         value={value}
