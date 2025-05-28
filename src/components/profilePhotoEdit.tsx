@@ -193,12 +193,12 @@ export function ProfilePhotoEdit({ imageUrl, displayName, sectionSlug }: Profile
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger className="relative h-fit w-fit cursor-pointer">
-        <Avatar className="border-background h-24 w-24 translate-y-12 border-6 shadow-sm">
+      <DialogTrigger className="relative h-fit w-fit translate-y-12 cursor-pointer">
+        <Avatar className="border-background h-24 w-24 border-6 shadow-sm">
           <AvatarImage src={finalImageUrl || imageUrl} alt={displayName} />
           <AvatarFallback className="text-2xl">{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <div className="bg-primary text-primary-foreground absolute -right-1 -bottom-11 rounded-full border p-1.5 shadow-sm">
+        <div className="bg-primary text-primary-foreground absolute -right-1 -bottom-11 -translate-y-12 rounded-full border p-1.5 shadow-sm">
           <Edit size={24} />
         </div>
       </DialogTrigger>
