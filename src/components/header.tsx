@@ -2,24 +2,31 @@
 
 import { UserButton, useUser } from '@clerk/nextjs';
 import { Loader, Users } from 'lucide-react';
-import { getSectionSlug } from '@/app/actions';
 import { useEffect, useState } from 'react';
+import { getSectionSlug } from '@/app/actions';
 
 export function Header() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [sectionSlug, setSectionSlug] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
+      if (!isLoaded || !user?.id) {
+        setSectionSlug(null);
+        return;
+      }
+
       try {
-        setSectionSlug(await getSectionSlug());
-      } catch {
+        const slug = await getSectionSlug(user.id);
+        setSectionSlug(slug);
+      } catch (error) {
+        console.error('Failed to fetch section slug:', error);
         setSectionSlug(null);
       }
     }
 
     fetchData();
-  }, [user]);
+  }, [user?.id, isLoaded]);
 
   return (
     <header className="relative flex h-14 w-full items-center gap-2 border-b px-4 py-2">
@@ -40,7 +47,7 @@ export function Header() {
               label="View your section"
               href={`/section/${sectionSlug}`}
               labelIcon={<Users size={16} />}
-            ></UserButton.Link>
+            />
           </UserButton.MenuItems>
         )}
       </UserButton>

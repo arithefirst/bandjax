@@ -13,15 +13,16 @@ export async function isScoreAveragingEnabled(): Promise<boolean> {
   return false;
 }
 
-export async function getSectionSlug() {
-  const authData = await auth();
-  if (!authData.userId) throw new Error('Section slug retrieval not authorized');
+export async function getSectionSlug(userId?: string) {
+  const targetUserId = userId || (await auth()).userId;
+
+  if (!targetUserId) return null;
 
   const userSection = await db
     .select()
     .from(sections)
-    // Drizzle auto-escapes this SQL
-    .where(sql`${sections.members} @> ${JSON.stringify([authData.userId])}`);
+    .where(sql`${sections.members} @> ${JSON.stringify([targetUserId])}`);
+
   return userSection.length >= 1 ? userSection[0].slug : null;
 }
 
