@@ -45,6 +45,10 @@ export function LogExerciseForm({ section }: LogExerciseFormProps) {
   async function onSubmit() {
     if (count && count > 0) {
       try {
+        if (!currentExercise) {
+          toast.error('You must select and exercise first.');
+          return;
+        }
         setLoading(true);
         await logExercise(section!, currentExerciseId, count);
         setLoading(false);
@@ -98,7 +102,7 @@ export function LogExerciseForm({ section }: LogExerciseFormProps) {
         </div>
 
         <DrawerFooter>
-          <Button className="cursor-pointer" onClick={onSubmit} disabled={isLoading}>
+          <Button className="cursor-pointer" onClick={onSubmit} disabled={isLoading || !currentExercise}>
             {isLoading ? <Loader className="animate-spin" /> : 'Log Exercise'}
           </Button>
           <DrawerClose className={cn('cursor-pointer', buttonVariants({ variant: 'outline' }))}>
