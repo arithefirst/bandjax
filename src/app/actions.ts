@@ -92,7 +92,7 @@ export async function logExercise(section: SectionsType, exerciseId: string, cou
 
 export async function updateBio(sectionSlug: string, newBio: string) {
   const user = await currentUser();
-  if (!user) throw new Error('Log Exercise Not authorized');
+  if (!user) throw new Error('Update Bio Not authorized');
 
   await db.transaction(async (tx) => {
     const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
@@ -102,6 +102,25 @@ export async function updateBio(sectionSlug: string, newBio: string) {
       .update(sections)
       .set({
         bio: newBio,
+      })
+      .where(eq(sections.slug, sectionSlug));
+  });
+
+  revalidatePath(`/${sectionSlug}`);
+}
+
+export async function updateProfileImage(sectionSlug: string, dataUrl: string) {
+  const user = await currentUser();
+  if (!user) throw new Error('Update Propic Not authorized');
+
+  await db.transaction(async (tx) => {
+    const sectionData = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
+    if (!sectionData[0].members.includes(user.id)) throw new Error('Update Propic Not authorized');
+
+    await tx
+      .update(sections)
+      .set({
+        imageUrl: dataUrl,
       })
       .where(eq(sections.slug, sectionSlug));
   });

@@ -1,6 +1,7 @@
 import { getSectionSlug, isScoreAveragingEnabled } from '@/app/actions';
 import { Header } from '@/components/header';
 import { Navbar } from '@/components/navbar';
+import { ProfilePhotoEdit } from '@/components/profilePhotoEdit';
 import { ProtectRSC } from '@/components/protect/server';
 import { SectionBio } from '@/components/sectionBio';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -54,7 +55,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   const user = await currentUser();
   const userSectionSlug = user ? await getSectionSlug() : null;
-  const canEditBio = userSectionSlug === slug;
+  const canEdit = userSectionSlug === slug;
 
   return (
     <ProtectRSC>
@@ -65,10 +66,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <Link href="/leaderboard" className="bg-background/30 absolute top-2 left-2 rounded-full p-2">
               <ChevronLeft />
             </Link>
-            <Avatar className="border-background h-24 w-24 translate-y-12 border-6 shadow-sm">
-              <AvatarImage src={imageUrl} alt={displayName} />
-              <AvatarFallback className="text-2xl">{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
+            {canEdit ? (
+              <ProfilePhotoEdit displayName={displayName} imageUrl={imageUrl} sectionSlug={slug} />
+            ) : (
+              <Avatar className="border-background h-24 w-24 translate-y-12 border-6 shadow-sm">
+                <AvatarImage src={imageUrl} alt={displayName} />
+                <AvatarFallback className="text-2xl">{displayName.substring(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+            )}
           </div>
           <div className="flex-1 px-4 pt-12">
             <div className="flex items-center">
@@ -83,7 +88,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               </span>
             </div>
             <h2 className="text-muted-foreground leading-5 italic">@{slug}</h2>
-            <SectionBio value={bio} canEdit={canEditBio} sectionSlug={slug} />
+            <SectionBio value={bio} canEdit={canEdit} sectionSlug={slug} />
             <hr className="my-3" />
             <h2 className="text-lg">Members</h2>
             <div className="mt-2 grid grid-cols-1 gap-1">
