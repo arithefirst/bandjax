@@ -221,3 +221,35 @@ export async function updateExercise(sectionSlug: string, exercise: Exercise) {
     }
   });
 }
+
+/**
+ * Adds a new section to the database
+ *
+ * @param sectionSlug - The unique slug identifier for the section
+ * @param displayName - The display name for the section
+ * @param imageUrl - The image URL for the section (optional, defaults to empty string)
+ * @throws When user is not authenticated or doesn't have admin role
+ * @throws When a section with the same slug already exists
+ */
+export async function addSection(sectionSlug: string, displayName: string) {
+  const user = await currentUser();
+  if (!user || user.publicMetadata.role !== 'admin') throw new Error('Add Section Not authorized');
+
+  await db.transaction(async (tx) => {
+    // Check if section with this slug already exists
+    const existingSection = await tx.select().from(sections).where(eq(sections.slug, sectionSlug));
+
+    if (existingSection.length > 0) {
+      throw new Error('Section with this slug already exists');
+    }
+
+    await tx.insert(sections).values({
+      slug: sectionSlug,
+      displayName: displayName,
+      imageUrl: '/default_propic.png',
+    });
+  });
+
+  revalidatePath('/admin');
+  revalidatePath('/');
+}

@@ -1,4 +1,5 @@
 import { AddEditExercise } from '@/components/adminForms/addEditExercise';
+import { AddSectionForm } from '@/components/adminForms/addSection';
 import { ToggleAvg } from '@/components/adminForms/toggleAvg';
 import { AdminUpgradeForm } from '@/components/adminForms/upgradeForm';
 import { Header } from '@/components/header';
@@ -39,6 +40,7 @@ export default async function Home() {
             </div>
             <ToggleAvg settings={settings} />
           </div>
+          <AddSectionForm />
           <AdminUpgradeForm users={usersForCombobox} />
           <AddEditExercise sections={sectionData} />
         </div>
