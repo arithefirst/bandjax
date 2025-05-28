@@ -6,6 +6,7 @@ import { sections } from '@/db/schema';
 import { SignInButton, SignUpButton } from '@clerk/nextjs';
 import { buttonVariants } from '../ui/button';
 import Image from 'next/image';
+import { desc } from 'drizzle-orm';
 
 export async function ProtectRSC({
   children,
@@ -44,7 +45,10 @@ export async function ProtectRSC({
     redirect('/');
   }
 
-  const sectionData = (await db.select().from(sections)).map((s) => ({ value: s.slug, label: s.displayName }));
+  const sectionData = (await db.select().from(sections).orderBy(desc(sections.displayName))).map((s) => ({
+    value: s.slug,
+    label: s.displayName,
+  }));
 
   return (
     <>
