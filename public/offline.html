@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.png" />
+    <title>You're Offline</title>
+    <style>
+      :root {
+        --radius: 0.35rem;
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.141 0.005 285.823);
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.141 0.005 285.823);
+        --primary: oklch(0.6658 0.2296 7.2);
+        --primary-foreground: oklch(0.98 0.02 345);
+        --muted: oklch(0.967 0.001 286.375);
+        --muted-foreground: oklch(0.552 0.016 285.938);
+        --border: oklch(0.92 0.004 286.32);
+        --ring: oklch(0.6658 0.2296 7.2);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background: oklch(0.141 0.005 285.823);
+          --foreground: oklch(0.985 0 0);
+          --card: oklch(0.21 0.006 285.885);
+          --card-foreground: oklch(0.985 0 0);
+          --primary: oklch(0.6658 0.2296 7.2);
+          --primary-foreground: oklch(0.98 0.02 345);
+          --muted: oklch(0.274 0.006 286.033);
+          --muted-foreground: oklch(0.705 0.015 286.067);
+          --border: oklch(1 0 0 / 10%);
+          --ring: oklch(0.6658 0.2296 7.2);
+        }
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        background-color: var(--background);
+        color: var(--foreground);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .container {
+        text-align: center;
+        max-width: 32rem;
+        width: 100%;
+      }
+
+      .card {
+        background-color: var(--card);
+        color: var(--card-foreground);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .icon-container {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .wifi-off-icon {
+        width: 4rem;
+        height: 4rem;
+        color: var(--primary);
+        stroke: currentColor;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--foreground);
+        line-height: 1.2;
+      }
+
+      .description {
+        font-size: 1rem;
+        color: var(--muted-foreground);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .refresh-button {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        border: none;
+        border-radius: var(--radius);
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        outline: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .refresh-button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      .refresh-button:focus {
+        box-shadow: 0 0 0 2px var(--ring);
+      }
+
+      .refresh-button:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 640px) {
+        .card {
+          padding: 2rem 1.5rem;
+        }
+
+        .title {
+          font-size: 1.5rem;
+        }
+
+        .wifi-off-icon {
+          width: 3rem;
+          height: 3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="icon-container">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="wifi-off-icon"
+          >
+            <path d="M12 20h.01" />
+            <path d="M8.5 16.429a5 5 0 0 1 7 0" />
+            <path d="M5 12.859a10 10 0 0 1 5.17-2.69" />
+            <path d="M19 12.859a10 10 0 0 0-2.007-1.523" />
+            <path d="M2 8.82a15 15 0 0 1 4.177-2.643" />
+            <path d="M22 8.82a15 15 0 0 0-11.288-3.764" />
+            <path d="m2 2 20 20" />
+          </svg>
+        </div>
+
+        <h1 class="title">You're Offline</h1>
+
+        <p class="description">
+          It looks like you've lost your internet connection. Please check your network settings and try again.
+        </p>
+
+        <button class="refresh-button" onclick="window.location.reload()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M3 21v-5h5" />
+          </svg>
+          Try Again
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
