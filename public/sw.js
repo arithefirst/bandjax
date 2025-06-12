@@ -10,7 +10,6 @@ self.addEventListener('message', (event) => {
 });
 
 self.addEventListener('install', async (event) => {
-  console.log(`Caching...`);
   event.waitUntil(caches.open(CACHE).then((cache) => cache.add(offlineFallbackPage)));
 });
 
